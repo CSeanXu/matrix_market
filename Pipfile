@@ -10,6 +10,7 @@ beeprint = "*"
 django = "==2.2.8"
 requests = "*"
 uwsgi = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "3.7"

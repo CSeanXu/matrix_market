@@ -137,9 +137,11 @@ TARGET_ASSETS = [
     "AED",
 ]
 
-FIAT_ASSETS = [
-    "USD",
-    "AED"
+REQUIRED_SYMBOL_INFO = [
+    ("BTC", ["BCH", "ETH", "ETC", "LTC"]),
+    ("ETH", ["BCH", "ETC", "LTC"]),
+    ("USD", ["BTC", "BCH", "ETH", "ETC", "LTC"]),
+    ("AED", ["BTC", "BCH", "ETH", "ETC", "LTC"]),
 ]
 
 USDT_USD_EXCHANGE_RATE = 1.01

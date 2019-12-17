@@ -59,7 +59,7 @@ def gen_bars(ticker):
 
 
 def format_ticker(j):
-    r = []
+    r = {}
 
     if not j["status"] == "ok":
         return
@@ -110,8 +110,10 @@ def format_ticker(j):
 
         bars = gen_bars(ticker_data)
 
-        r.append({
-            "symbol": f"{base}_{quote}",
+        symbol = f"{base}_{quote}"
+
+        r.setdefault(symbol, {
+            "symbol": symbol,
             "prices": json.dumps(ticker_data),
             "bars": bars,
         })
@@ -128,13 +130,30 @@ def format_ticker(j):
 
         bars = gen_bars(ticker_data)
 
-        r.append({
-            "symbol": f"{quote}_{base}",
+        symbol = f"{quote}_{base}"
+
+        r.setdefault(symbol, {
+            "symbol": symbol,
             "prices": json.dumps(ticker_data),
             "bars": bars,
         })
 
-    return r
+    return filter_ticker(r)
+
+
+def filter_ticker(collection):
+    result = []
+    for quote_currency, corresponding_base_currency in settings.REQUIRED_SYMBOL_INFO:
+        tmp = {
+            "quote_currency": quote_currency,
+            "data": []
+        }
+        for base_currency in corresponding_base_currency:
+            symbol = f"{base_currency}_{quote_currency}"
+            data = collection[symbol]
+            tmp["data"].append(data)
+        result.append(tmp)
+    return result
 
 
 def crawl_ticker():

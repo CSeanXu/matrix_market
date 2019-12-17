@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -148,3 +149,5 @@ USDT_USD_EXCHANGE_RATE = 1.01
 USDT_AED_EXCHANGE_RATE = 0.6
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+BAR_EXPIRE_TIME = datetime.timedelta(hours=1)

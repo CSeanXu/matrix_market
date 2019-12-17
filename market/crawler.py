@@ -43,19 +43,35 @@ def _gen_bar(ti, ts):
     return json.dumps(rec)
 
 
-def gen_bars(ticker):
+bars_cache = {}
+
+
+class BarCacheItem(object):
+    def __init__(self, bar, gen_time):
+        self.bar = bar
+        self.gen_time = gen_time
+
+
+def gen_bars(ticker, symbol):
     """
     :return: a list of 10 str s
     """
+    now = datetime.datetime.now()
+    now_rounded = datetime.datetime(*now.timetuple()[:4])
 
-    now = datetime.datetime(*datetime.datetime.now().timetuple()[:4])
+    cached_bars = bars_cache.get(symbol)
 
-    _rec = []
-    for i in range(10):
-        ts = int(now.timestamp() * 1000)
-        _rec.append(_gen_bar(ticker, ts))
-        now -= datetime.timedelta(hours=1)
-    return _rec
+    if not cached_bars or now - cached_bars.gen_time > settings.BAR_EXPIRE_TIME:
+        logger.info("bars not exist or expired, gen it.")
+
+        _rec = []
+        for i in range(10):
+            ts = int(now_rounded.timestamp() * 1000)
+            _rec.append(_gen_bar(ticker, ts))
+            now_rounded -= datetime.timedelta(hours=1)
+        bars_cache[symbol] = BarCacheItem(_rec, now)
+
+    return bars_cache.get(symbol).bar
 
 
 def format_ticker(j):
@@ -108,9 +124,9 @@ def format_ticker(j):
 
         ticker_data = [ts, open_price, high_price, low_price, close_price, 0]
 
-        bars = gen_bars(ticker_data)
-
         symbol = f"{base}_{quote}"
+
+        bars = gen_bars(ticker_data, symbol)
 
         r.setdefault(symbol, {
             "symbol": symbol,
@@ -128,9 +144,9 @@ def format_ticker(j):
 
         ticker_data = [ts, reversed_open_price, reversed_high_price, reversed_low_price, reversed_close_price, 0]
 
-        bars = gen_bars(ticker_data)
-
         symbol = f"{quote}_{base}"
+
+        bars = gen_bars(ticker_data, symbol)
 
         r.setdefault(symbol, {
             "symbol": symbol,

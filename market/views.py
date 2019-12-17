@@ -4,7 +4,7 @@ from django.views.decorators.cache import cache_page
 from market.crawler import crawl_ticker
 
 
-@cache_page(60 * 1)
+@cache_page(10 * 1)  # seconds
 def ticker(request):
     _ticker = crawl_ticker()
 
